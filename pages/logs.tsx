@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 type LogEntry = {
   id: string;
-  timestamp: string;
+  created_at: string;
   identifier: string;
   password?: string;
   type: 'email/user' | 'phone';
@@ -18,7 +18,7 @@ export default function Logs() {
       const res = await fetch('/api/logs');
       const data = await res.json();
       // Sort newest first
-      setLogs(data.sort((a: LogEntry, b: LogEntry) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+      setLogs(data.sort((a: LogEntry, b: LogEntry) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
     } catch (err) {
       console.error("Failed to fetch logs:", err);
     } finally {
@@ -107,7 +107,7 @@ export default function Logs() {
               {logs.map((log) => (
                 <tr key={log.id} style={{ borderBottom: '1px solid #F8F9FB' }}>
                   <td style={{ padding: '16px 20px', color: '#666', fontSize: '14px' }}>
-                    {new Date(log.timestamp).toLocaleString()}
+                    {new Date(log.created_at).toLocaleString()}
                   </td>
                   <td style={{ padding: '16px 20px' }}>
                     <span style={{ 
