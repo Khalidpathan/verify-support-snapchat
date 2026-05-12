@@ -432,6 +432,8 @@ body {
     font-size: 15px;
     display: flex;
     align-items: center;
+    cursor: pointer;
+    user-select: none;
   }
   
   .footer-col h3::before {
@@ -444,10 +446,21 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    transition: transform 0.2s ease;
+  }
+
+  .footer-col.active h3::before {
+    transform: rotate(90deg);
   }
   
   .footer-col ul {
     display: none;
+    padding-top: 12px;
+    padding-left: 26px;
+  }
+
+  .footer-col.active ul {
+    display: block;
   }
   
   .lang-selector {

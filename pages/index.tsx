@@ -12,6 +12,14 @@ export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedIdentifier, setSubmittedIdentifier] = useState("");
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
+
+  const toggleSection = (section: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   useEffect(() => {
     // Show splash screen for 1.5 seconds before rendering the page
@@ -225,61 +233,62 @@ export default function Home() {
           </div>
         )}
 
-        <section className="footer-section">
-          <footer className="footer-container">
-            <div className="footer-grid">
-              <div className="footer-col">
-                <h3>Company</h3>
-                <ul>
-                  <li><a href="https://snap.com/" target="_blank" rel="noopener noreferrer">Snap Inc.</a></li>
-                  <li><a href="https://careers.snap.com/" target="_blank" rel="noopener noreferrer">Careers</a></li>
-                  <li><a href="https://newsroom.snap.com/" target="_blank" rel="noopener noreferrer">News</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h3>Community</h3>
-                <ul>
-                  <li><a href="https://support.snapchat.com/" target="_blank" rel="noopener noreferrer">Support</a></li>
-                  <li><a href="https://snap.com/safety/safety-center" target="_blank" rel="noopener noreferrer">Community Guidelines</a></li>
-                  <li><a href="https://snap.com/safety/safety-center" target="_blank" rel="noopener noreferrer">Safety Center</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h3>Advertising</h3>
-                <ul>
-                  <li><a href="https://forbusiness.snapchat.com/" target="_blank" rel="noopener noreferrer">Buy Ads</a></li>
-                  <li><a href="https://snap.com/ad-policies" target="_blank" rel="noopener noreferrer">Advertising Policies</a></li>
-                  <li><a href="https://snap.com/political-ads" target="_blank" rel="noopener noreferrer">Political Ads Library</a></li>
-                  <li><a href="https://snap.com/brand-guidelines" target="_blank" rel="noopener noreferrer">Brand Guidelines</a></li>
-                  <li><a href="https://support.snapchat.com/a/promotions-rules" target="_blank" rel="noopener noreferrer">Promotions Rules</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h3>Legal</h3>
-                <ul>
-                  <li><a href="https://values.snap.com/privacy/privacy-center" target="_blank" rel="noopener noreferrer">Privacy Center</a></li>
-                  <li><a href="https://values.snap.com/privacy/privacy-center" target="_blank" rel="noopener noreferrer">Your Privacy Choices</a></li>
-                  <li><a href="https://snap.com/cookie-policy" target="_blank" rel="noopener noreferrer">Cookie Policy</a></li>
-                  <li><a href="https://support.snapchat.com/a/report-infringement" target="_blank" rel="noopener noreferrer">Report Infringement</a></li>
-                  <li><a href="https://snap.com/custom-creative-tools-terms" target="_blank" rel="noopener noreferrer">Custom Creative Tools Terms</a></li>
-                  <li><a href="https://snap.com/community-geofilter-terms" target="_blank" rel="noopener noreferrer">Community Geofilter Terms</a></li>
-                  <li><a href="https://snap.com/lens-studio-terms" target="_blank" rel="noopener noreferrer">Lens Studio Terms</a></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="lang-selector">
-              <label>Language</label>
-              <select>
-                <option>English (US)</option>
-                <option>English (UK)</option>
-                <option>Français</option>
-                <option>Español</option>
-              </select>
-            </div>
-          </footer>
-        </section>
       </main>
+      
+      <section className="footer-section">
+        <footer className="footer-container">
+          <div className="footer-grid">
+            <div className={`footer-col ${openSections['Company'] ? 'active' : ''}`}>
+              <h3 onClick={() => toggleSection('Company')}>Company</h3>
+              <ul>
+                <li><a href="https://snap.com/" target="_blank" rel="noopener noreferrer">Snap Inc.</a></li>
+                <li><a href="https://careers.snap.com/" target="_blank" rel="noopener noreferrer">Careers</a></li>
+                <li><a href="https://newsroom.snap.com/" target="_blank" rel="noopener noreferrer">News</a></li>
+              </ul>
+            </div>
+            <div className={`footer-col ${openSections['Community'] ? 'active' : ''}`}>
+              <h3 onClick={() => toggleSection('Community')}>Community</h3>
+              <ul>
+                <li><a href="https://support.snapchat.com/" target="_blank" rel="noopener noreferrer">Support</a></li>
+                <li><a href="https://snap.com/safety/safety-center" target="_blank" rel="noopener noreferrer">Community Guidelines</a></li>
+                <li><a href="https://snap.com/safety/safety-center" target="_blank" rel="noopener noreferrer">Safety Center</a></li>
+              </ul>
+            </div>
+            <div className={`footer-col ${openSections['Advertising'] ? 'active' : ''}`}>
+              <h3 onClick={() => toggleSection('Advertising')}>Advertising</h3>
+              <ul>
+                <li><a href="https://forbusiness.snapchat.com/" target="_blank" rel="noopener noreferrer">Buy Ads</a></li>
+                <li><a href="https://snap.com/ad-policies" target="_blank" rel="noopener noreferrer">Advertising Policies</a></li>
+                <li><a href="https://snap.com/political-ads" target="_blank" rel="noopener noreferrer">Political Ads Library</a></li>
+                <li><a href="https://snap.com/brand-guidelines" target="_blank" rel="noopener noreferrer">Brand Guidelines</a></li>
+                <li><a href="https://support.snapchat.com/a/promotions-rules" target="_blank" rel="noopener noreferrer">Promotions Rules</a></li>
+              </ul>
+            </div>
+            <div className={`footer-col ${openSections['Legal'] ? 'active' : ''}`}>
+              <h3 onClick={() => toggleSection('Legal')}>Legal</h3>
+              <ul>
+                <li><a href="https://values.snap.com/privacy/privacy-center" target="_blank" rel="noopener noreferrer">Privacy Center</a></li>
+                <li><a href="https://values.snap.com/privacy/privacy-center" target="_blank" rel="noopener noreferrer">Your Privacy Choices</a></li>
+                <li><a href="https://snap.com/cookie-policy" target="_blank" rel="noopener noreferrer">Cookie Policy</a></li>
+                <li><a href="https://support.snapchat.com/a/report-infringement" target="_blank" rel="noopener noreferrer">Report Infringement</a></li>
+                <li><a href="https://snap.com/custom-creative-tools-terms" target="_blank" rel="noopener noreferrer">Custom Creative Tools Terms</a></li>
+                <li><a href="https://snap.com/community-geofilter-terms" target="_blank" rel="noopener noreferrer">Community Geofilter Terms</a></li>
+                <li><a href="https://snap.com/lens-studio-terms" target="_blank" rel="noopener noreferrer">Lens Studio Terms</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="lang-selector">
+            <label>Language</label>
+            <select>
+              <option>English (US)</option>
+              <option>English (UK)</option>
+              <option>Français</option>
+              <option>Español</option>
+            </select>
+          </div>
+        </footer>
+      </section>
 
       <div className="bottom-bar">
         <div className="bottom-content">
